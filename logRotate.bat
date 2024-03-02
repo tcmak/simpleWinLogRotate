@@ -1,27 +1,31 @@
-set local
-
-REM Configuration
-
-REM files to compress
-set log_file[0]=""
-
-REM Program starts here
+@echo off
 
 REM Preparing Timestamp Information
 set year=%date:~6,4%
-set month=%date:~0,2%
-set day=%date:~3,2%
+set month=%date:~3,2%
+set day=%date:~0,2%
 
-set "x=0"
+REM Compression command
+set "compressCommand=C:\Program Files\7-Zip\7z.exe"
+set "compressFileType=7z"
+set "compressSwitches=a -t7z"
 
-:SymLoop
-if defined log_file[%x%] (
-  for /f "delims==" %%F in (%log_file[0]%) do (
-    set dest=%%~dF%%~pF%%~nF_%year%%month%%day%%%~xF
-    copy %log_file[0]% %dest%
-    set executeCompression=%compressCommand% a -t7z %dest%.7z %dest%
-    %executeCompression%
-  )
-  set /a "x+=1"
-  GOTO :SymLoop
+if not defined %1 do (
+    echo Usage: logRotate.bat filename
+    goto :end
 )
+
+for %%a in (%1) do (
+    set filepath=%%~dpa
+    set filename=%%~na
+    set extname=%%~xa
+)    
+
+set dest=%filename%_%year%%month%%day%%extname%
+ren %1 %dest%
+
+"%compressCommand%" %compressSwitches% "%filepath%%dest%.%compressFileType%" "%filepath%%dest%"
+del  "%filepath%%dest%"
+
+exit 0
+:end
