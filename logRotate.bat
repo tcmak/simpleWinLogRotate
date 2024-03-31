@@ -10,12 +10,9 @@ set "compressCommand=C:\Program Files\7-Zip\7z.exe"
 set "compressFileType=7z"
 set "compressSwitches=a -t7z"
 
-if not defined %1 do (
-    echo Usage: logRotate.bat filename
-    goto :end
-)
+if [%1] == [] goto end
 
-for %%a in (%1) do (
+For %%a in (%1) do (
     set filepath=%%~dpa
     set filename=%%~na
     set extname=%%~xa
@@ -29,3 +26,4 @@ del  "%filepath%%dest%"
 
 exit 0
 :end
+echo Usage: logRotate.bat filename
